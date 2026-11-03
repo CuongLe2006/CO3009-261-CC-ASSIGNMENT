@@ -1,5 +1,3 @@
-
-Contributing · MD
 # Git Workflow (team guide)
  
 This file is for the team during development. It can be removed before the final submission.
