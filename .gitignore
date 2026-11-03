@@ -1,0 +1,11 @@
+﻿# Build output
+Debug/
+Release/
+*.o
+*.d
+*.elf
+*.map
+*.su
+
+# STM32CubeIDE workspace metadata
+.metadata/
