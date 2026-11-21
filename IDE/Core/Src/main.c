@@ -22,7 +22,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "scheduler.h"
+#include "software_timer.h"
+#include "button.h"
+#include "fsm_mode.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -62,7 +65,14 @@ static void MX_TIM2_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void log_msg(const char *s);
+static void task_tmr(void) {
+    if (timer_flag[0]) {
+        setTimer(0, 2000);
+        HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+        log_msg("timer0 expired\r\n");
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -97,7 +107,12 @@ int main(void)
   MX_I2C1_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-
+  SCH_Init();
+  SCH_Add_Task(timer_run,    0, 1);
+  SCH_Add_Task(button_scan,  0, 1);
+  SCH_Add_Task(fsm_mode_run, 0, 1);
+  fsm_mode_init();
+  HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -105,7 +120,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+	  SCH_Dispatch_Tasks();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -326,7 +341,10 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if (htim->Instance == TIM2) SCH_Update();   /* tick 10 ms */
+}
 /* USER CODE END 4 */
 
 /**
