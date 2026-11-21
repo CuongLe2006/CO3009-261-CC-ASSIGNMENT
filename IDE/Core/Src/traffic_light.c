@@ -3,9 +3,9 @@
 
 /* {A, B} cho tung mau, lay tu bang to hop tin hieu cua nhom (muc 3.2 bao cao) */
 static const uint8_t light_code[4][2] = {
-    [LIGHT_RED]   = {1, 0},
-    [LIGHT_GREEN] = {0, 1},
-    [LIGHT_AMBER] = {1, 1},
+    [LIGHT_RED]   = {1, 1},
+    [LIGHT_GREEN] = {1, 0},
+    [LIGHT_AMBER] = {0, 1},
     [LIGHT_OFF]   = {0, 0},
 };
 
