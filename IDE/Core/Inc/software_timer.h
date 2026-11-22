@@ -9,4 +9,6 @@ void setTimer(int idx, int duration_ms);
 void timer_clear_all(void);
 void timer_run(void);            /* task chu ky 1 tick (10 ms) */
 
+int timer_get_left_ms(int idx);              /* thời gian còn lại, ms */
+
 #endif
