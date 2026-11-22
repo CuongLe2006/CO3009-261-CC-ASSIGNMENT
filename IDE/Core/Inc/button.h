@@ -7,5 +7,7 @@
 
 void    button_scan(void);              /* task 1 tick (10 ms) */
 uint8_t isButtonPressed(int idx);       /* tra 1 DUNG MOT LAN moi lan nhan */
+uint8_t isButtonLongPressed(int idx);
+uint8_t isButtonRepeat(int idx);
 
 #endif
