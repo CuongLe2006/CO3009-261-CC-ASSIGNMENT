@@ -26,6 +26,9 @@
 #include "software_timer.h"
 #include "button.h"
 #include "fsm_mode.h"
+#include "lcd.h"
+#include "dht20.h"
+#include "display.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -100,13 +103,19 @@ int main(void)
   MX_I2C1_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+  lcd_init();                              // dùng HAL_Delay -> làm trước khi bật timer
+  dht20_init();
+
   SCH_Init();
-  SCH_Add_Task(timer_run,    0, 1);
-  SCH_Add_Task(button_scan,  0, 1);
-  SCH_Add_Task(fsm_mode_run, 0, 1);
-  SCH_Add_Task(lcd_task_ui,  0, 20);
-  fsm_mode_init();
-  HAL_TIM_Base_Start_IT(&htim2);
+  SCH_Add_Task(timer_run,     0,  1);
+  SCH_Add_Task(button_scan,   0,  1);
+  SCH_Add_Task(fsm_mode_run,  0,  1);
+  SCH_Add_Task(dht20_trigger, 0,  200);    // đo mỗi 2 s
+  SCH_Add_Task(lcd_task_env,  50, 100);    // hàng dưới mỗi 1 s
+  SCH_Add_Task(lcd_task_mode, 20, 10);     // hàng trên mỗi 100 ms
+
+  fsm_mode_init();                         // hook ghi LCD, nên phải sau lcd_init()
+  HAL_TIM_Base_Start_IT(&htim2);           // bật tick cuối cùng
   /* USER CODE END 2 */
 
   /* Infinite loop */
