@@ -80,10 +80,10 @@ void fsm_tuning_init(void) {                 /* fsm_mode đã đưa 2 đường 
 }
 
 void fsm_tuning_run(void) {
-    if (isButtonPressed(2)) {                /* BTN3: +1 s, chặn ở max */
+    if (isButtonPressed(2) || isButtonRepeat(2)) {   /* BTN3: +1 s, giữ nút thì tự tăng */
         if (val < get_max()) val++;
     }
-    if (isButtonPressed(3)) {                /* BTN4: -1 s, chặn ở min */
+    if (isButtonPressed(3) || isButtonRepeat(3)) {   /* BTN4: -1 s, giữ nút thì tự giảm */
         if (val > get_min()) val--;
     }
     if (isButtonPressed(1)) {                /* BTN2: lưu rồi sang trường kế */
