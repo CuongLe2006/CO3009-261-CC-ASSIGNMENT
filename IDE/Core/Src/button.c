@@ -23,8 +23,18 @@ static volatile uint8_t pressed_flag[NO_OF_BUTTONS];
 /* Task 10 ms: debounce bang 3 lan doc lien tiep giong nhau */
 void button_scan(void) {
     for (int i = 0; i < NO_OF_BUTTONS; i++) {
+        /* debounce: 3 lan doc lien tiep giong nhau */
+        r2[i] = r1[i];
+        r1[i] = r0[i];
+        r0[i] = (HAL_GPIO_ReadPin(btn_port[i], btn_pin[i]) == BTN_PRESSED_LEVEL);
+        if (r0[i] == r1[i] && r1[i] == r2[i]) {
+            if (r0[i] && !stable[i]) pressed_flag[i] = 1;   /* canh nhan */
+            stable[i] = r0[i];
+        }
+
+        /* dem thoi gian giu nut */
         if (stable[i]) {
-            if (hold_cnt[i] < 60000) hold_cnt[i]++;            /* khong tran so */
+            if (hold_cnt[i] < 60000) hold_cnt[i]++;
             if (hold_cnt[i] == LONG_PRESS_TICKS) long_flag[i] = 1;
             if (hold_cnt[i] >= REPEAT_DELAY_TICKS &&
                 (hold_cnt[i] - REPEAT_DELAY_TICKS) % REPEAT_PERIOD_TICKS == 0)
