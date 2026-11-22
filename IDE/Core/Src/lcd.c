@@ -5,9 +5,9 @@
  *      Author: Windows
  */
 
-
 #include "lcd.h"
 #include "dht20.h"
+#include "global.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -17,6 +17,9 @@ extern I2C_HandleTypeDef hi2c1;
 #define LCD_BL    0x08          // backlight
 #define LCD_EN    0x04
 #define LCD_RS    0x01
+
+/* Nội dung đang hiển thị trên từng hàng, để chỉ vẽ lại khi có thay đổi */
+static char lcd_cache[2][17];
 
 /* Gửi 1 byte (lệnh hoặc dữ liệu) = 2 nibble, mỗi nibble có xung EN */
 static void lcd_send(uint8_t data, uint8_t rs)
@@ -52,18 +55,38 @@ void lcd_init(void)
     lcd_cmd(0x06);   // con trỏ tự tăng
     lcd_cmd(0x01);   // xoá màn hình
     HAL_Delay(2);    // lệnh xoá cần ~1.6 ms
+
+    /* Sau khi xoá màn hình, cả hai hàng đều là khoảng trắng */
+    for (int r = 0; r < 2; r++) {
+        memset(lcd_cache[r], ' ', 16);
+        lcd_cache[r][16] = '\0';
+    }
 }
 
 void lcd_print_row(uint8_t row, const char *str)
 {
-    lcd_cmd((row == 0) ? 0x80 : 0xC0);   // đặt con trỏ về đầu hàng
-    for (int i = 0; i < 16; i++) {
-        lcd_data(*str ? (uint8_t)*str++ : ' ');   // đệm khoảng trắng đến đủ 16 ký tự
+    if (row > 1) return;
+
+    /* Chuẩn bị đủ 16 ký tự, đệm khoảng trắng phía sau */
+    char line[17];
+    uint8_t i = 0;
+    while (i < 16 && str[i]) { line[i] = str[i]; i++; }
+    while (i < 16) line[i++] = ' ';
+    line[16] = '\0';
+
+    if (strcmp(line, lcd_cache[row]) == 0) return;   // nội dung không đổi -> bỏ qua
+    strcpy(lcd_cache[row], line);
+
+    lcd_cmd((row == 0) ? 0x80 : 0xC0);               // đặt con trỏ về đầu hàng
+    for (i = 0; i < 16; i++) {
+        lcd_data((uint8_t)line[i]);
     }
 }
 
 void lcd_task_env(void)   // task chu kỳ, ví dụ 1000 ms
 {
+    if (mode == MODE_TUNING) return;   // hàng dưới đang dành cho R/A/G
+
     char line[17];
     int32_t t = dht20_get_temp_x10();
     int32_t h = dht20_get_humi_x10();
