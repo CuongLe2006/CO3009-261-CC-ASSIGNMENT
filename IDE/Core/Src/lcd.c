@@ -13,7 +13,7 @@
 
 extern I2C_HandleTypeDef hi2c1;
 
-#define LCD_ADDR  (0x27 << 1)   // đổi theo kết quả quét I2C
+#define LCD_ADDR  (0x21 << 1)   // đổi theo kết quả quét I2C
 #define LCD_BL    0x08          // backlight
 #define LCD_EN    0x04
 #define LCD_RS    0x01
