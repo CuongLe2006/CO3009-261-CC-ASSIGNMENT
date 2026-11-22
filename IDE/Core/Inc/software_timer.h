@@ -10,4 +10,6 @@ int  getTimerLeft(int idx);
 void timer_clear_all(void);
 void timer_run(void);
 
+int timer_get_left_ms(int idx);              /* thời gian còn lại, ms */
+
 #endif

@@ -30,3 +30,8 @@ void timer_run(void) {
         }
     }
 }
+
+int timer_get_left_ms(int idx) {
+    if (idx < 0 || idx >= MAX_TIMER) return 0;
+    return timer_counter[idx] * TICK_MS;
+}
