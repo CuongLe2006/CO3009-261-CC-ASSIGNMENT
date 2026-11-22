@@ -17,6 +17,11 @@ void timer_clear_all(void) {
     }
 }
 
+int getTimerLeft(int idx) {
+    if (idx < 0 || idx >= MAX_TIMER) return 0;
+    return timer_counter[idx] * TICK_MS;
+}
+
 void timer_run(void) {
     for (int i = 0; i < MAX_TIMER; i++) {
         if (timer_counter[i] > 0) {

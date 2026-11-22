@@ -60,19 +60,12 @@ static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
-
+void lcd_task_ui(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 void log_msg(const char *s);
-static void task_tmr(void) {
-    if (timer_flag[0]) {
-        setTimer(0, 2000);
-        HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-        log_msg("timer0 expired\r\n");
-    }
-}
 /* USER CODE END 0 */
 
 /**
@@ -111,6 +104,7 @@ int main(void)
   SCH_Add_Task(timer_run,    0, 1);
   SCH_Add_Task(button_scan,  0, 1);
   SCH_Add_Task(fsm_mode_run, 0, 1);
+  SCH_Add_Task(lcd_task_ui,  0, 20);
   fsm_mode_init();
   HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
@@ -345,6 +339,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == TIM2) SCH_Update();   /* tick 10 ms */
 }
+__attribute__((weak)) void lcd_task_ui(void) { }
 /* USER CODE END 4 */
 
 /**

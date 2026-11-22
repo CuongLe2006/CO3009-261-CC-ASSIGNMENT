@@ -6,7 +6,8 @@
 extern volatile int timer_flag[MAX_TIMER];
 
 void setTimer(int idx, int duration_ms);
+int  getTimerLeft(int idx);
 void timer_clear_all(void);
-void timer_run(void);            /* task chu ky 1 tick (10 ms) */
+void timer_run(void);
 
 #endif
